@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Raahyma</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(120deg, #ffe6f0, #ffccd5);
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.card {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 20px;
+  max-width: 450px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  animation: fadeIn 1.5s ease;
+  position: relative;
+  z-index: 10;
+}
+
+h1 { color: #e75480; margin-bottom: 15px; font-size: 28px; }
+p { line-height: 1.6; font-size: 16px; }
+
+button {
+  margin-top: 20px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 25px;
+  background: #e75480;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+button:hover { background: #d9436c; transform: scale(1.05); }
+
+.hidden { display: none; margin-top: 20px; }
+
+.heart { font-size: 40px; animation: pulse 1.5s infinite; margin-top: 15px; }
+
+img {
+  width: 100%;
+  border-radius: 15px;
+  margin-top: 15px;
+  animation: fadeIn 1.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.floating {
+  position: fixed;
+  font-size: 20px;
+  pointer-events: none;
+  animation: floatUp 4s linear infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-600px) rotate(360deg); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+  <h1>Hey Raahyma</h1>
+
+  <p id="introText">
+    I made something special for you 🫰🏻<br>
+    Click below to start 💌
+  </p>
+
+  <button id="startBtn">Start Surprise 🫶🏻</button>
+
+  <!-- STEP 1 -->
+  <div id="step1" class="hidden">
+    <img src="photo1.jpeg" alt="Us">
+    <button onclick="showStep2()">Next 🫰🏻</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" class="hidden">
+    <img src="photo2.jpeg" alt="Us">
+    <button onclick="showStep3()">Next 🤌🏻</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step3" class="hidden">
+    <p id="typingMessage"></p>
+    <div class="heart">❤️</div>
+  </div>
+</div>
+
+<script>
+document.getElementById("startBtn").addEventListener("click", function () {
+  document.getElementById("introText").style.display = "none";
+  this.style.display = "none";
+  document.getElementById("step1").style.display = "block";
+
+  const music = document.getElementById("bgMusic");
+  music.play().catch(() => {});
+});
+
+function showStep2() {
+  document.getElementById("step1").style.display = "none";
+  document.getElementById("step2").style.display = "block";
+}
+
+function showStep3() {
+  document.getElementById("step2").style.display = "none";
+  document.getElementById("step3").style.display = "block";
+  startTyping();
+  startFloatingEmojis();
+}
+
+const message = `Happy Valentine’s Day, Raahyma!
+
+I know we’re miles apart,
+but I wanted to do something small
+to remind you how close you are to my heart 🫶🏻.
+
+No matter how far we are,
+my heart knows exactly where it belongs,
+with you, always 🫰🏻.
+
+I can’t wait to be with you 🤌🏻.`;
+
+let i = 0;
+function startTyping() {
+  const el = document.getElementById("typingMessage");
+  el.innerHTML = "";
+  i = 0;
+
+  function type() {
+    if (i < message.length) {
+      el.innerHTML += message[i] === "\n" ? "<br>" : message[i];
+      i++;
+      setTimeout(type, 45);
+    }
+  }
+  type();
+}
+
+function startFloatingEmojis() {
+  const emojis = ["❤️","🫰🏻","🤌🏻","🫶🏻","🩵","🤍","💞","👩‍❤️‍💋‍👨"];
+  for (let j = 0; j < 30; j++) {
+    const span = document.createElement("span");
+    span.className = "floating";
+    span.style.left = Math.random() * 100 + "%";
+    span.style.fontSize = (14 + Math.random() * 20) + "px";
+    span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    span.style.animationDelay = Math.random() * 3 + "s";
+    document.body.appendChild(span);
+  }
+}
+</script>
+
+</body>
+</html>
