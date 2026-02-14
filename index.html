@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Raahyma ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { box-sizing: border-box; }
+body {
+  margin:0;
+  min-height:100vh;
+  font-family:'Segoe UI',sans-serif;
+  /* Lighter pastel gradient */
+  background:linear-gradient(-45deg,#ffe3e3,#ffd6c0,#ffe9f0,#ffd0d0);
+  background-size:400% 400%;
+  animation:bg 12s ease infinite;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow-x:hidden;
+}
+@keyframes bg { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+.card { 
+  width:95%; max-width:480px; padding:30px; 
+  background:rgba(255,255,255,.7); 
+  backdrop-filter:blur(14px); 
+  border-radius:24px; 
+  box-shadow:0 30px 60px rgba(0,0,0,.15); 
+  text-align:center; 
+  position:relative; 
+  z-index:2;
+}
+.hidden { display:none; }
+img { width:100%; border-radius:20px; margin-top:15px; animation:fade .7s ease; }
+@keyframes fade { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+button { margin-top:18px; padding:14px 28px; border:none; border-radius:30px; background:linear-gradient(135deg,#e75480,#ff8fab); color:white; font-size:16px; cursor:pointer; transition: transform .2s; }
+button:hover { transform: scale(1.05); }
+input, textarea { width:100%; padding:12px; margin-top:10px; border-radius:14px; border:2px solid #ff8fab; background:rgba(255,255,255,0.7); font-size:16px; }
+.option { margin:10px 0; padding:12px; border-radius:14px; background:white; cursor:pointer; transition:0.2s; }
+.option:hover { transform: scale(1.03); }
+.correct { background:#c8f7c5 } .wrong { background:#f7c5c5 }
+.heart { font-size:42px; cursor:pointer; animation:pulse 1.4s infinite; }
+@keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
+.small { font-size:14px; color:#555 }
+.feedback-box { background:white; border-radius:12px; padding:8px; margin:6px 0; word-wrap: break-word; }
+
+/* Floating emojis */
+.floating-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index:0;
+}
+.floating-emoji {
+  position: absolute;
+  font-size: 30px;
+  animation: float 8s linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(-10vh) translateX(100px) rotate(360deg); opacity: 0; }
+}
+
+/* Auth page styling */
+#auth {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 15px 50px rgba(0,0,0,.15);
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+#auth h2 {
+  font-size: 28px;
+  color: #e75480;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 4px #fff;
+}
+</style>
+</head>
+<body>
+
+<!-- Floating emojis -->
+<div class="floating-bg" id="floatingBg"></div>
+
+<audio id="music" loop muted>
+  <source src="song.mp3.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+
+<!-- AUTH -->
+<div id="auth">
+  <h2>🔐 Authorization</h2>
+  <input id="username" placeholder="Username (anything)">
+  <input id="pass" placeholder="Password">
+  <button id="loginBtn">Enter</button>
+  <p id="err" class="small"></p>
+</div>
+
+<!-- PHOTOS -->
+<div id="photosDiv" class="hidden">
+  <img id="photo">
+  <button id="nextPhotoBtn">Next 🫰🏻</button>
+</div>
+
+<!-- FIRST MESSAGE -->
+<div id="messagePage1" class="hidden">
+  <p id="typingMessage1"></p>
+  <button id="nextMsgBtn">Next 💌</button>
+</div>
+
+<!-- SECOND MESSAGE -->
+<div id="messagePage2" class="hidden">
+  <p id="typingMessage2"></p>
+  <div class="heart" id="secretHeart">❤️</div>
+  <p id="credit" class="hidden small">
+    Built with love & code by <strong>Khaled</strong> 💻❤️
+  </p>
+  <button id="continueBtn">Continue 💘</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quizDiv" class="hidden">
+  <h3 id="q"></h3>
+  <div id="opts"></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultDiv" class="hidden">
+  <h2 id="finalTitle"></h2>
+  <p id="finalMsg"></p>
+  <button id="feedbackBtn">Leave feedback 💬</button>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedbackDiv" class="hidden">
+  <h3>Anonymous Feedback</h3>
+  <p class="small">Max 10 characters · Max 5 total</p>
+  <textarea id="fbText" maxlength="10" placeholder="Say something…"></textarea>
+  <button id="saveFbBtn">Submit</button>
+
+  <h4 style="margin-top:15px;">Previous feedback</h4>
+  <div id="fbList"></div>
+</div>
+
+</div>
+
+<script>
+window.onload = function() {
+
+const PASSWORD = "15thMay2025";
+const photos = ["photo1.jpeg","photo2.jpeg","photo3.jpeg.JPG","photo4.jpeg.JPG","photo5.jpeg.JPG"];
+let currentPhotoIndex = 0;
+let currentQuizIndex = 0;
+let score = 0;
+let heartClicks = 0;
+
+const message1 = `Happy Valentine’s Day Raahyma! ❤️
+This is your official proof that someone loves you.
+Distance does not scare me.
+Time does not scare me.
+Missing you a little is worth it.`;
+
+const message2 = `I know we’re miles apart,
+but I wanted to do something small
+to remind you how close you are to my heart 🫶🏻.
+No matter how far we are,
+my heart knows exactly where it belongs,
+with you, always 🫰🏻.
+I can’t wait to be with you 🤌🏻`;
+
+const quizData = [
+ {q:"Who is the cutest?",o:["Me","You","Both","You obviously"],a:3},
+ {q:"This page was made with?",o:["HTML","Love","Effort","All"],a:3},
+ {q:"Best Valentine gift?",o:["Flowers","Chocolate","This page","Everything"],a:2},
+ {q:"Who deserves the Tiramisu?",o:["Everyone","You","Me","You again"],a:3},
+ {q:"Distance means?",o:["Nothing","Everything","Pain","Love"],a:0},
+ {q:"Final verdict?",o:["Fail","Pass","Cookie","Pass+Cookie"],a:3},
+ {q:"Did you smile?",o:["No","Maybe","Yes","Obviously"],a:3}
+];
+
+const auth = document.getElementById("auth");
+const passInput = document.getElementById("pass");
+const err = document.getElementById("err");
+const photosDiv = document.getElementById("photosDiv");
+const photoEl = document.getElementById("photo");
+const nextPhotoBtn = document.getElementById("nextPhotoBtn");
+const music = document.getElementById("music");
+
+const messagePage1 = document.getElementById("messagePage1");
+const typingMessage1 = document.getElementById("typingMessage1");
+const nextMsgBtn = document.getElementById("nextMsgBtn");
+
+const messagePage2 = document.getElementById("messagePage2");
+const typingMessage2 = document.getElementById("typingMessage2");
+const secretHeart = document.getElementById("secretHeart");
+const credit = document.getElementById("credit");
+const continueBtn = document.getElementById("continueBtn");
+
+const quizDiv = document.getElementById("quizDiv");
+const qEl = document.getElementById("q");
+const optsEl = document.getElementById("opts");
+
+const resultDiv = document.getElementById("resultDiv");
+const finalTitle = document.getElementById("finalTitle");
+const finalMsg = document.getElementById("finalMsg");
+
+const feedbackDiv = document.getElementById("feedbackDiv");
+const feedbackBtn = document.getElementById("feedbackBtn");
+const fbText = document.getElementById("fbText");
+const saveFbBtn = document.getElementById("saveFbBtn");
+const fbList = document.getElementById("fbList");
+
+// PLAY MUSIC ON FIRST USER INTERACTION
+function tryPlayMusic(){
+  try { music.play(); music.muted=false; } catch(e){}
+}
+document.body.addEventListener('click', tryPlayMusic, {once:true});
+
+// LOGIN
+document.getElementById("loginBtn").onclick = function() {
+  if(passInput.value === PASSWORD){
+    auth.classList.add("hidden");
+    photosDiv.classList.remove("hidden");
+    photoEl.src = photos[currentPhotoIndex];
+    tryPlayMusic();
+  } else {
+    err.innerText = "Wrong password 👀";
+  }
+};
+
+// NEXT PHOTO
+nextPhotoBtn.onclick = function() {
+  currentPhotoIndex++;
+  if(currentPhotoIndex < photos.length) {
+    photoEl.src = photos[currentPhotoIndex];
+  } else {
+    photosDiv.classList.add("hidden");
+    messagePage1.classList.remove("hidden");
+    typeMessage(message1, typingMessage1);
+  }
+};
+
+// TYPE EFFECT
+function typeMessage(text, el){
+  el.innerHTML = "";
+  let i = 0;
+  function type() {
+    if(i < text.length){
+      el.innerHTML += text[i]==="\n"? "<br>":text[i];
+      i++;
+      setTimeout(type, 40);
+    }
+  }
+  type();
+}
+
+// MESSAGE1 NEXT
+nextMsgBtn.onclick = function() {
+  messagePage1.classList.add("hidden");
+  messagePage2.classList.remove("hidden");
+  typeMessage(message2, typingMessage2);
+};
+
+// SECRET HEART (3 clicks)
+secretHeart.onclick = function() {
+  heartClicks++;
+  if(heartClicks===3) credit.classList.remove("hidden");
+};
+
+// CONTINUE TO QUIZ
+continueBtn.onclick = function() {
+  messagePage2.classList.add("hidden");
+  quizDiv.classList.remove("hidden");
+  loadQuiz();
+};
+
+// LOAD QUIZ
+function loadQuiz() {
+  const qd = quizData[currentQuizIndex];
+  qEl.innerText = qd.q;
+  optsEl.innerHTML = "";
+  qd.o.forEach((text,i)=>{
+    const d = document.createElement("div");
+    d.className="option";
+    d.innerText = text;
+    d.onclick = ()=>answer(i,d);
+    optsEl.appendChild(d);
+  });
+}
+
+// ANSWER
+function answer(i,el){
+  if(i === quizData[currentQuizIndex].a) { score++; el.classList.add("correct"); }
+  else el.classList.add("wrong");
+  setTimeout(()=>{
+    currentQuizIndex++;
+    if(currentQuizIndex < quizData.length) loadQuiz();
+    else finishQuiz();
+  },600);
+}
+
+// FINISH QUIZ
+function finishQuiz() {
+  quizDiv.classList.add("hidden");
+  resultDiv.classList.remove("hidden");
+  if(score === quizData.length){
+    finalTitle.innerText = "PASSED 💖";
+    finalMsg.innerText = "Perfect! You answered all correctly. Cookie deserved 🍪";
+  } else{
+    finalTitle.innerText = "FAILED 😌";
+    finalMsg.innerText = `Score ${score}/${quizData.length}. Cookies are only for perfect scores 😉`;
+  }
+}
+
+// FEEDBACK
+feedbackBtn.onclick = function() {
+  resultDiv.classList.add("hidden");
+  feedbackDiv.classList.remove("hidden");
+  renderFeedback();
+};
+
+saveFbBtn.onclick = function() {
+  let list = JSON.parse(localStorage.getItem("feedback")||"[]");
+  if(list.length>=5){ alert("Feedback limit reached 💌"); return; }
+  const text = fbText.value.trim();
+  if(!text){ alert("Write something first 🙂"); return; }
+  list.push(text);
+  localStorage.setItem("feedback", JSON.stringify(list));
+  fbText.value="";
+  renderFeedback();
+};
+
+function renderFeedback(){
+  const list = JSON.parse(localStorage.getItem("feedback")||"[]");
+  fbList.innerHTML = list.map(f=>`<div class="feedback-box">"${f}"</div>`).join("");
+}
+
+// Floating emojis
+const emojis = ["🩵","🫰🏻❤️","🫶🏻🤍","🥀"];
+const floatingBg = document.getElementById("floatingBg");
+function createEmoji(){
+  const e = document.createElement("div");
+  e.className = "floating-emoji";
+  e.innerText = emojis[Math.floor(Math.random()*emojis.length)];
+  e.style.left = Math.random()*100 + "vw";
+  e.style.animationDuration = (5 + Math.random()*5) + "s";
+  floatingBg.appendChild(e);
+  setTimeout(()=>floatingBg.removeChild(e), 10000);
+}
+setInterval(createEmoji, 500);
+
+};
+</script>
+
+</body>
+</html>
