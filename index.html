@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Raahyma ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin:0;
+  min-height:100vh;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(-45deg,#ffafbd,#ffc3a0,#ffdde1,#ee9ca7);
+  background-size:400% 400%;
+  animation:bg 12s ease infinite;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Gradient animation */
+@keyframes bg {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* Background ONLY for auth */
+.auth-bg::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url("Dudububu.JPG");
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  opacity:0.35;
+}
+
+/* Card */
+.card {
+  width:95%;
+  max-width:480px;
+  padding:30px;
+  background:rgba(255,255,255,.7);
+  backdrop-filter:blur(14px);
+  border-radius:24px;
+  box-shadow:0 30px 60px rgba(0,0,0,.25);
+  text-align:center;
+  z-index:2;
+}
+
+/* AUTH BOX → Transparent */
+#auth {
+  background:transparent;
+  backdrop-filter:none;
+  box-shadow:none;
+}
+
+.hidden { display:none; }
+
+img {
+  width:100%;
+  border-radius:20px;
+  margin-top:15px;
+  animation:fade .7s ease;
+}
+
+@keyframes fade {
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
+button {
+  margin-top:18px;
+  padding:14px 28px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(135deg,#e75480,#ff8fab);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+input, textarea {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:14px;
+  border:none;
+}
+
+.option {
+  margin:10px 0;
+  padding:12px;
+  border-radius:14px;
+  background:white;
+  cursor:pointer;
+}
+
+.correct { background:#c8f7c5 }
+.wrong { background:#f7c5c5 }
+
+.heart {
+  font-size:42px;
+  cursor:pointer;
+  animation:pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0%{transform:scale(1)}
+  50%{transform:scale(1.3)}
+  100%{transform:scale(1)}
+}
+
+.small { font-size:14px; color:#555 }
+
+.feedback-box {
+  background:white;
+  border-radius:12px;
+  padding:8px;
+  margin:6px 0;
+}
+</style>
+</head>
+
+<body class="auth-bg">
+
+<audio id="music" loop muted>
+  <source src="song.mp3.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+
+<!-- AUTH -->
+<div id="auth">
+  <h2>🔐 Authorization</h2>
+  <input id="username" placeholder="Username (anything)">
+  <input id="pass" placeholder="Password">
+  <button id="loginBtn">Enter</button>
+  <p id="err" class="small"></p>
+</div>
+
+<!-- PHOTOS -->
+<div id="photosDiv" class="hidden">
+  <img id="photo">
+  <button id="nextPhotoBtn">Next 🫰🏻</button>
+</div>
+
+<!-- FIRST MESSAGE -->
+<div id="messagePage1" class="hidden">
+  <p id="typingMessage1"></p>
+  <button id="nextMsgBtn">Next 💌</button>
+</div>
+
+<!-- SECOND MESSAGE -->
+<div id="messagePage2" class="hidden">
+  <p id="typingMessage2"></p>
+  <div class="heart" id="secretHeart">❤️</div>
+  <p id="credit" class="hidden small">
+    Built with love & code by <strong>Khaled</strong> 💻❤️
+  </p>
+  <button id="continueBtn">Continue 💘</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quizDiv" class="hidden">
+  <h3 id="q"></h3>
+  <div id="opts"></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultDiv" class="hidden">
+  <h2 id="finalTitle"></h2>
+  <p id
