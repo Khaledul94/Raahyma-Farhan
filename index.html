@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Raahyma ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin:0;
+  min-height:100vh;
+  font-family:'Segoe UI',sans-serif;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+
+  background:linear-gradient(-45deg,#ffafbd,#ffc3a0,#ffdde1,#ee9ca7);
+  background-size:400% 400%;
+  animation:bg 12s ease infinite;
+}
+
+@keyframes bg {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* Bubududu ONLY for auth page */
+.auth-bg::before {
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background-image:url("Bubududu.PNG");
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+
+  opacity:0.35;
+  animation:float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%{ transform:translateY(0px) scale(1); }
+  50%{ transform:translateY(-10px) scale(1.02); }
+  100%{ transform:translateY(0px) scale(1); }
+}
+
+/* Floating hearts */
+.heart-bg {
+  position:absolute;
+  font-size:20px;
+  animation:rise 7s linear infinite;
+  opacity:0.6;
+}
+
+@keyframes rise {
+  from {
+    transform:translateY(100vh) scale(0.8);
+    opacity:0;
+  }
+  to {
+    transform:translateY(-10vh) scale(1.5);
+    opacity:0.8;
+  }
+}
+
+/* Card */
+.card {
+  width:95%;
+  max-width:480px;
+  padding:30px;
+  text-align:center;
+  z-index:2;
+}
+
+/* AUTH BOX → TRANSPARENT */
+#auth {
+  background:transparent;
+  backdrop-filter:none;
+  box-shadow:none;
+  border-radius:24px;
+  padding:10px;
+}
+
+/* Other boxes remain styled */
+.glass {
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(18px);
+  border-radius:24px;
+  box-shadow:0 30px 60px rgba(0,0,0,.25);
+  padding:30px;
+}
+
+.hidden { display:none; }
+
+img {
+  width:100%;
+  border-radius:20px;
+  margin-top:15px;
+  animation:fade .7s ease;
+}
+
+@keyframes fade {
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
+button {
+  margin-top:18px;
+  padding:14px 28px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(135deg,#e75480,#ff8fab);
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
+
+input, textarea {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:14px;
+  border:none;
+}
+
+.option {
+  margin:10px 0;
+  padding:12px;
+  border-radius:14px;
+  background:white;
+  cursor:pointer;
+}
+
+.correct { background:#c8f7c5 }
+.wrong { background:#f7c5c5 }
+
+.heart {
+  font-size:42px;
+  cursor:pointer;
+  animation:pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  0%{transform:scale(1)}
+  50%{transform:scale(1.3)}
+  100%{transform:scale(1)}
+}
+
+.small { font-size:14px; color:#555 }
+
+.feedback-box {
+  background:white;
+  border-radius:12px;
+  padding:8px;
+  margin:6px 0;
+}
+</style>
+</head>
+<body class="auth-bg">
+
+<audio id="music" loop muted>
+  <source src="song.mp3.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+
+<!-- AUTH -->
+<div id="auth">
+  <h2>🔐 Authorization</h2>
+  <input id="username" placeholder="Username (anything)">
+  <input id="pass" placeholder="Password">
+  <button id="loginBtn">Enter</button>
+  <p id="err" class="small"></p>
+</div>
+
+<!-- PHOTOS -->
+<div id="photosDiv" class="hidden glass">
+  <img id="photo">
+  <button id="nextPhotoBtn">Next 🫰🏻</button>
+</div>
+
+<!-- MESSAGE 1 -->
+<div id="messagePage1" class="hidden glass">
+  <p id="typingMessage1"></p>
+  <button id="nextMsgBtn">Next 💌</button>
+</div>
+
+<!-- MESSAGE 2 -->
+<div id="messagePage2" class="hidden glass">
+  <p id="typingMessage2"></p>
+  <div class="heart" id="secretHeart">❤️</div>
+  <p id="credit" class="hidden small">
+    Built with love & code by <strong>Khaled</strong> 💻❤️
+  </p>
+  <button id="continueBtn">Continue 💘</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quizDiv" class="hidden glass">
+  <h3 id="q"></h3>
+  <div id="opts"></div>
+</div>
+
+<!-- RESULT -->
+<div id="resultDiv" class="hidden glass">
+  <h2 id="finalTitle"></h2>
+  <p id="finalMsg"></p>
+  <button id="feedbackBtn">Leave feedback 💬</button>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedbackDiv" class="hidden glass">
+  <h3>Anonymous Feedback</h3>
+  <p class="small">Max 10 characters · Max 5 total</p>
+  <textarea id="fbText" maxlength="10"></textarea>
+  <button id="saveFbBtn">Submit</button>
+  <h4 style="margin-top:15px;">Previous feedback</h4>
+  <div id="fbList"></div>
+</div>
+
+</div>
+
+<script>
+
+/* Hearts */
+for(let i=0;i<25;i++){
+  const heart = document.createElement("div");
+  heart.className = "heart-bg";
+  heart.innerText = "❤️";
+  heart.style.left = Math.random()*100 + "vw";
+  heart.style.animationDelay = Math.random()*7 + "s";
+  document.body.appendChild(heart);
+}
+
+window.onload = function() {
+
+const PASSWORD = "15thMay2025";
+const photos = ["photo1.jpeg","photo2.jpeg","photo3.jpeg.JPG","photo4.jpeg.JPG","photo5.jpeg.JPG"];
+
+let currentPhotoIndex = 0;
+let currentQuizIndex = 0;
+let score = 0;
+let heartClicks = 0;
+
+const quizData = [
+ {q:"Who is the cutest?",o:["Me","You","Both","You obviously"],a:3},
+ {q:"This page was made with?",o:["HTML","Love","Effort","All"],a:3},
+ {q:"Best Valentine gift?",o:["Flowers","Chocolate","This page","Everything"],a:2},
+ {q:"Who deserves the world?",o:["Everyone","You","Me","You again"],a:3},
+ {q:"Distance means?",o:["Nothing","Everything","Pain","Love"],a:0},
+ {q:"Final verdict?",o:["Fail","Pass","Cookie","Pass+Cookie"],a:3},
+ {q:"Did you smile?",o:["No","Maybe","Yes","Obviously"],a:3}
+];
+
+const auth = document.getElementById("auth");
+const passInput = document.getElementById("pass");
+const err = document.getElementById("err");
+const photosDiv = document.getElementById("photosDiv");
+const photoEl = document.getElementById("photo");
+
+document.getElementById("loginBtn").onclick = function() {
+  if(passInput.value === PASSWORD){
+
+    /* Remove Bubududu background */
+    document.body.classList.remove("auth-bg");
+
+    auth.classList.add("hidden");
+    photosDiv.classList.remove("hidden");
+    photoEl.src = photos[currentPhotoIndex];
+
+  } else err.innerText = "Wrong password 👀";
+};
+
+function finishQuiz() {
+  quizDiv.classList.add("hidden");
+  resultDiv.classList.remove("hidden");
+
+  if(score === quizData.length){
+    finalTitle.innerText = "PASSED 💖";
+    finalMsg.innerText = "Perfect! You answered all correctly. Cookie deserved 🍪";
+  } else{
+    finalTitle.innerText = "FAILED 😌";
+    finalMsg.innerText = `Score ${score}/${quizData.length}. Cookies are only for perfect scores 😉`;
+  }
+}
+
+};
+</script>
+
+</body>
+</html>
